@@ -1,13 +1,15 @@
-# Algoritmos de Substituição de Página: Clock & Segunda Chance
+# Algoritmo Clock (Relógio) - Substituição de Página
 
 ## 📖 Introdução
 
-Este documento explica detalhadamente **dois algoritmos distintos** implementados no projeto:
+Este documento explica detalhadamente o **Algoritmo Clock (Relógio)** implementado no projeto.
 
-1. **🕐 Algoritmo Clock (Relógio)** - Buffer circular com ponteiro
-2. **📋 Algoritmo Segunda Chance** - Lista linear com movimento de páginas
+O algoritmo Clock é uma implementação eficiente que utiliza:
+- **Buffer circular** com ponteiro rotativo
+- **Bit de referência** para dar segunda chance às páginas
+- **Estrutura de dados fixa** sem movimento de páginas
 
-Ambos utilizam bit de referência para melhorar o desempenho do FIFO básico, mas diferem na implementação e comportamento.
+É uma melhoria significativa sobre o FIFO básico, oferecendo melhor desempenho com baixo overhead.
 
 ---
 
@@ -24,7 +26,7 @@ FIFO: Remove página 1 quando ela acabou de ser usada!
 
 ---
 
-## 🕐 Algoritmo Clock (Relógio)
+## 🕐 Como Funciona o Algoritmo Clock
 
 ### Características Principais
 - **Buffer circular** com ponteiro que "gira" como ponteiro de relógio
@@ -85,94 +87,23 @@ Clock=0: Frame[0] tem bit=0 → substitui
 
 ---
 
-## 📋 Algoritmo Segunda Chance
+## ⚖️ Vantagens do Algoritmo Clock
 
-### Características Principais
-- **Lista linear** (como FIFO melhorado)
-- **Páginas se movem fisicamente** na estrutura
-- **Mais próximo do FIFO** conceitual
+| Vantagem | Descrição |
+|----------|-----------|
+| **Eficiência** | O(1) amortizado para substituição |
+| **Simplicidade** | Implementação direta com ponteiro circular |
+| **Baixo Overhead** | Apenas um bit por frame + ponteiro |
+| **Melhor que FIFO** | Considera localidade temporal |
+| **Pior que LRU** | Aproximação do LRU com menor custo |
 
-### Estruturas Necessárias
-1. **Lista/Vector**: Páginas ordenadas por tempo de chegada
-2. **Bit de Referência**: Para cada página na lista
-3. **Ponteiro implícito**: Sempre examina primeira posição
+### 🎯 Características de Desempenho
+- **Complexidade temporal**: O(1) amortizado, O(n) pior caso
+- **Complexidade espacial**: O(n) para n frames
+- **Overhead**: Mínimo (1 bit + 1 ponteiro)
+- **Eficiência**: 70-90% do algoritmo ótimo na maioria dos casos
 
-### Algoritmo Detalhado
-
-```
-1. Quando uma página é referenciada:
-   - Se está na lista: marca bit de referência = 1 (HIT)
-   - Se não está na lista: gera page fault (MISS)
-
-2. Quando precisa substituir uma página (MISS + lista cheia):
-   a) Examina primeira página da lista
-   b) Se bit de referência = 0:
-      → Remove desta posição
-      → Insere nova página no final
-   c) Se bit de referência = 1:
-      → Limpa bit (1 → 0) = "segunda chance"  
-      → Move página para o final da lista
-      → Repete processo com nova primeira página
-```
-
-### 🔄 Exemplo de Execução (Segunda Chance)
-```
-Referência: 1, 2, 3, 4, 1, 2, 5
-
-Lista: []
-
-Ref 1: MISS
-Lista: [1*]
-
-Ref 2: MISS
-Lista: [1 ] [2*]
-
-Ref 3: MISS
-Lista: [1 ] [2 ] [3*]
-
-Ref 4: MISS (lista cheia)
-Primeira posição: 1 (bit=0) → remove
-Lista: [2 ] [3 ] [4*]
-
-Ref 1: MISS
-Primeira posição: 2 (bit=0) → remove
-Lista: [3 ] [4 ] [1*]
-
-Ref 2: MISS  
-Primeira posição: 3 (bit=0) → remove
-Lista: [4 ] [1 ] [2*]
-
-Ref 5: MISS
-Primeira posição: 4 (bit=0) → remove
-Lista: [1 ] [2 ] [5*]
-```
-
----
-
-## ⚖️ Comparação: Clock vs Segunda Chance
-
-| Aspecto | Clock | Segunda Chance |
-|---------|-------|----------------|
-| **Estrutura** | Buffer circular fixo | Lista linear dinâmica |
-| **Movimento** | Só ponteiro se move | Páginas se movem |
-| **Complexidade** | O(1) amortizado | O(n) no pior caso |
-| **Memória** | Menor overhead | Maior overhead |
-| **Implementação** | Mais eficiente | Mais conceitual |
-| **Resultado** | Geralmente igual | Ocasionalmente diferente |
-
-### 🎯 Quando Diferem
-Os algoritmos podem produzir resultados diferentes em casos específicos devido às diferenças na ordem de avaliação:
-
-```
-Exemplo que pode diferir:
-Sequência: 1, 2, 3, 1, 4, 2, 3
-Memória: 3 frames
-
-Clock: Ponteiro pode "pular" páginas com bit=1
-Segunda Chance: Sempre examina na ordem de chegada
-```
-
-## Implementação em C++
+## 🔧 Implementação em C++
 
 ### Estruturas Principais:
 
@@ -225,13 +156,26 @@ O algoritmo deve mostrar como páginas com bit de referência = 1 recebem segund
 
 ## Comparação com Outros Algoritmos
 
-| Algoritmo | Complexidade | Desempenho | Overhead |
-|-----------|--------------|------------|----------|
-| FIFO      | O(1)         | Ruim       | Baixo    |
-| Clock     | O(n)         | Bom        | Baixo    |
-| LRU       | O(1)         | Ótimo      | Alto     |
+| Algoritmo | Complexidade | Desempenho | Overhead | Quando Usar |
+|-----------|--------------|------------|----------|-------------|
+| **FIFO**  | O(1)         | Ruim       | Baixo    | Sistemas simples |
+| **Clock** | O(n) pior    | Bom        | Baixo    | **Recomendado** |
+| **LRU**   | O(1)         | Ótimo      | Alto     | Sistemas críticos |
 
-## Referências
+### 🏆 Por que Clock é Amplamente Usado
+- **Equilibrio ideal** entre desempenho e simplicidade
+- **Baixo overhead** comparado ao LRU
+- **Implementação eficiente** em hardware e software
+- **Comportamento previsível** e estável
 
-- Tanenbaum, A. S. "Modern Operating Systems", Capítulo 3
-- Silberschatz, A. "Operating System Concepts", Capítulo 9
+## 📚 Referências Acadêmicas
+
+- Tanenbaum, A. S. "Modern Operating Systems", Capítulo 3 - Gerenciamento de Memória
+- Silberschatz, A. "Operating System Concepts", Capítulo 9 - Memória Virtual  
+- Stallings, W. "Operating Systems", Capítulo 8 - Virtual Memory
+- Deitel, H. "Operating Systems", Capítulo 11 - Virtual Memory Management
+
+---
+
+**Desenvolvido para:** Sistemas Operacionais - UFJF 2025.1  
+**Projeto:** Tema 28 - Algoritmo Clock de Substituição de Páginas

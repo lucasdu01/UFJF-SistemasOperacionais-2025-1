@@ -86,22 +86,22 @@ mingw32-make run
 #### Compilação Completa (Uma linha):
 ```bash
 # Linux/macOS/Windows
-g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/clock_simulator
+g++ -std=c++11 -Wall -Wextra -O2 -Isrc/include src/lib/*.cpp src/app/*.cpp -o ./bin/simulator
 ```
 
 #### Compilação Detalhada (Passo a passo):
 ```bash
 # Criar diretórios
-mkdir -p obj bin
+mkdir -p obj/lib obj/app bin
 
 # Compilar cada arquivo
-g++ -Wall -Wextra -std=c++11 -g -c src/ClockAlgorithm.cpp -o obj/ClockAlgorithm.o
-g++ -Wall -Wextra -std=c++11 -g -c src/SecondChanceAlgorithm.cpp -o obj/SecondChanceAlgorithm.o
-g++ -Wall -Wextra -std=c++11 -g -c src/MemoryManager.cpp -o obj/MemoryManager.o
-g++ -Wall -Wextra -std=c++11 -g -c src/main.cpp -o obj/main.o
+g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/ClockAlgorithm.cpp -o obj/lib/ClockAlgorithm.o
+g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/SecondChanceAlgorithm.cpp -o obj/lib/SecondChanceAlgorithm.o
+g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/MemoryManager.cpp -o obj/lib/MemoryManager.o
+g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/app/main.cpp -o obj/app/main.o
 
 # Linkar
-g++ obj/*.o -o bin/clock_simulator
+g++ obj/lib/*.o obj/app/*.o -o bin/simulator
 ```
 
 ### 🧹 Comandos de Limpeza
@@ -124,8 +124,8 @@ rmdir /s obj bin  # Windows
 make run
 
 # Diretamente
-./bin/clock_simulator      # Linux/macOS
-bin\clock_simulator.exe    # Windows
+./bin/simulator      # Linux/macOS
+bin\simulator.exe    # Windows
 ```
 
 ### 📋 **Menu Principal**
@@ -149,7 +149,7 @@ bin\clock_simulator.exe    # Windows
 
 #### 1. **Primeira Execução**
 ```bash
-./bin/clock_simulator
+./bin/simulator
 # 1. Configure a memória (recomendado: 3-5 frames)
 # 2. Selecione algoritmo (Clock ou Segunda Chance) 
 # 3. Execute testes automáticos
@@ -292,11 +292,13 @@ mingw32-make
 
 ### **Erro: 'No such file or directory'**
 ```bash
-# Verificar estrutura de diretórios
-ls -la src/    # deve mostrar arquivos .cpp e .h
+# Verificar estrutura de diretórios (nova estrutura)
+ls -la src/include/    # deve mostrar arquivos .h
+ls -la src/lib/        # deve mostrar arquivos .cpp  
+ls -la src/app/        # deve mostrar main.cpp
 
 # Criar diretórios necessários  
-mkdir -p obj bin
+mkdir -p obj/lib obj/app bin
 ```
 
 ### **Erro de Compilação C++11**
@@ -304,13 +306,13 @@ mkdir -p obj bin
 # Verificar versão do GCC
 g++ --version
 
-# Forçar C++11
-g++ -std=c++11 -Wall -Wextra ./src/*.cpp -o ./bin/simulator
+# Forçar C++11 (nova estrutura)
+g++ -std=c++11 -Wall -Wextra -Isrc/include src/lib/*.cpp src/app/*.cpp -o ./bin/simulator
 ```
 
 ### **Erro de Permissão (Linux/macOS)**
 ```bash
-chmod +x bin/clock_simulator
+chmod +x bin/simulator
 ```
 
 ### **Programa trava ou não responde**
@@ -331,16 +333,16 @@ make clean && make
 make run > output.txt 2>&1
 
 # Debug com GDB (Linux/macOS)
-gdb ./bin/clock_simulator
+gdb ./bin/simulator
 ```
 
 ### **Análise de Performance**
 ```bash
 # Medir tempo de execução
-time ./bin/clock_simulator
+time ./bin/simulator
 
 # Verificar uso de memória (Linux)
-valgrind --tool=memcheck ./bin/clock_simulator
+valgrind --tool=memcheck ./bin/simulator
 ```
 
 ---
@@ -350,12 +352,14 @@ valgrind --tool=memcheck ./bin/clock_simulator
 ```
 TrabalhoPratico/
 ├── obj/                    # Arquivos objeto (gerados)
-│   ├── main.o
-│   ├── ClockAlgorithm.o
-│   ├── SecondChanceAlgorithm.o
-│   └── MemoryManager.o
+│   ├── lib/               # Objetos das bibliotecas
+│   │   ├── ClockAlgorithm.o
+│   │   ├── SecondChanceAlgorithm.o
+│   │   └── MemoryManager.o
+│   └── app/               # Objetos da aplicação
+│       └── main.o
 ├── bin/                    # Executáveis (gerados)
-│   └── clock_simulator.exe
+│   └── simulator.exe
 └── logs/                   # Logs opcionais
     ├── debug.log
     └── results.txt
@@ -363,7 +367,39 @@ TrabalhoPratico/
 
 ---
 
-## 🎓 Dicas Acadêmicas
+## �️ Estrutura do Código Organizada
+
+O projeto segue **padrões profissionais** de organização de código C++:
+
+### **📁 Diretórios de Código**
+```
+src/
+├── include/          # Headers (.h) - Declarações de classes e funções
+│   ├── ClockAlgorithm.h
+│   ├── SecondChanceAlgorithm.h  
+│   └── MemoryManager.h
+├── lib/             # Implementações (.cpp) - Código das bibliotecas
+│   ├── ClockAlgorithm.cpp
+│   ├── SecondChanceAlgorithm.cpp
+│   └── MemoryManager.cpp
+└── app/             # Aplicação principal
+    └── main.cpp     # Interface do usuário e controle
+```
+
+### **🔗 Dependências de Includes**
+- **`lib/*.cpp`** incluem `../include/*.h`
+- **`app/main.cpp`** inclui `../include/MemoryManager.h`
+- **Makefile** configurado com `-Isrc/include`
+
+### **⚙️ Vantagens da Organização**
+- **Separação clara** entre interface e implementação
+- **Compilação modular** - apenas arquivos modificados são recompilados
+- **Reutilização** - headers podem ser usados em outros projetos
+- **Manutenibilidade** - estrutura profissional e escalável
+
+---
+
+## �🎓 Dicas Acadêmicas
 
 ### **Para Análise de Algoritmos**
 1. Execute testes com diferentes tamanhos de memória

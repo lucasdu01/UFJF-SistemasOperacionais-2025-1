@@ -39,7 +39,16 @@ Resultado Esperado: ~9 page faults
 Memória: 4 frames
 Sequência: 1 2 1 3 1 2 1 4 1 2 1 3 1 2 1
 Referências: 15
-Resultado Esperado: Alta taxa de hit devido ao working set
+Resultado Esperado: Alta taxa de hit devido ao working set (~70% hit rate)
+```
+
+### **Teste 6: Demonstração da Nova Estrutura**
+```
+Memória: 3 frames
+Sequência: 1 2 3 1 2 4 5 1 2
+Referências: 9
+Objetivo: Testar ambos algoritmos com a nova implementação
+Resultado Esperado: Clock e Segunda Chance com 6-7 page faults
 ```
 
 ## 🔄 Diferenças Entre Clock e Segunda Chance
@@ -75,7 +84,7 @@ Resultado: Mais frames podem resultar em mais page faults
 ## 🧪 Executando os Testes
 
 ### **Via Interface do Programa**
-1. Execute `./bin/clock_simulator`
+1. Execute `./bin/simulator` (Linux/macOS) ou `bin\simulator.exe` (Windows)
 2. Selecione "4. Executar testes automaticos"
 3. Os testes 1, 2 e 3 executam automaticamente
 
@@ -167,6 +176,40 @@ Análise: [Explicação dos resultados]
 ```
 
 ---
+
+## 🔬 **Observações Técnicas sobre os Algoritmos**
+
+### **Clock Algorithm**
+- Implementa política de aproximação de LRU usando bit de referência
+- Varre páginas em ordem circular até encontrar página com bit 0
+- Reseta bits durante a varredura para dar nova oportunidade
+- Eficiente para working sets estáveis
+
+### **Second Chance Algorithm**  
+- Extensão do FIFO que considera bit de referência
+- Páginas recentemente referenciadas evitam substituição imediata
+- Ordem FIFO quebrada apenas quando bit está ativo
+- Melhor para sequências com muitas referências repetidas
+
+### **Comparação de Performance**
+- **Clock**: Melhor em working sets bem definidos
+- **Segunda Chance**: Superior em padrões FIFO com reuso
+- **Ambos**: 10-30% melhores que FIFO puro
+- **Diferenças**: Raras, ocorrem em cenários específicos
+
+### **Debugging da Nova Estrutura**
+```powershell
+# Verificar objetos compilados
+dir obj\lib\
+dir obj\app\
+
+# Debug de compilação
+mingw32-make clean
+mingw32-make VERBOSE=1
+
+# Testar executável
+.\bin\simulator.exe
+```
 
 **Casos de teste para:** Sistemas Operacionais - UFJF 2025.1  
 **Projeto:** Tema 28 - Algoritmos Clock & Segunda Chance

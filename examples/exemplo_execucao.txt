@@ -1,28 +1,36 @@
-=== EXEMPLO DE EXECUÇÃO DO SIMULADOR ALGORITMO CLOCK ===
+=== EXEMPLO DE EXECUÇÃO DO SIMULADOR CLOCK & SEGUNDA CHANCE ===
 
-$ ./bin/clock_simulator
+$ ./bin/simulator
 
-=== SIMULADOR ALGORITMO CLOCK (SEGUNDA CHANCE) ===
+---COMPILAR---
+mingw32-make run
+
+=== SIMULADOR ALGORITMOS CLOCK & SEGUNDA CHANCE ===
 Desenvolvido para Sistemas Operacionais - UFJF
-Tema 28: Algoritmo de Substituição de Página
+Tema 28: Algoritmos Clock & Segunda Chance
 
-1. Configurar parâmetros de memória
-2. Executar simulação interativa  
-3. Executar teste automático
-4. Visualizar estatísticas
-5. Sair
+1. Configurar parametros de memoria
+2. Selecionar algoritmo  
+3. Executar simulacao interativa
+4. Executar testes automaticos
+5. Visualizar estatisticas
+6. Ajuda
+7. Sair
 
 Escolha uma opção: 1
 
-=== CONFIGURAÇÃO DE PARÂMETROS ===
-Digite o número de frames na memória física (3-10): 3
-Configuração salva: 3 frames de memória física
+=== CONFIGURACAO DE PARAMETROS ===
+Digite o numero de frames na memoria fisica (3-10): 3
+Configuracao salva: 3 frames de memoria fisica
 
-Escolha uma opção: 2
+Algoritmo selecionado: Clock (padrao)
 
-=== SIMULAÇÃO INTERATIVA ===
-Memória configurada: 3 frames
-Digite as páginas a serem referenciadas (digite -1 para sair):
+Escolha uma opção: 3
+
+=== SIMULACAO INTERATIVA ===
+Memoria configurada: 3 frames
+Algoritmo ativo: Clock
+Digite as paginas a serem referenciadas (digite -1 para sair):
 
 Página: 1
 Referência: 1 | Status: MISS (Page Fault)
@@ -61,20 +69,21 @@ Memória: [4*] [1*] [2*] | Clock: 0 | Faults: 6, Hits: 1
 
 Página: -1
 
-=== ESTATÍSTICAS FINAIS ===
-Total de referências: 7
+=== ESTATISTICAS FINAIS ===
+Total de referencias: 7
 Page Faults: 6
 Hits: 1  
 Taxa de Page Fault: 85.71%
 Taxa de Hit: 14.29%
 
-Simulação concluída!
+Simulacao concluida!
 
-Escolha uma opção: 3
+Escolha uma opção: 4
 
-=== TESTE AUTOMÁTICO ===
-Executando Teste 1: Sequência Básica
-Memória: 3 frames | Sequência: 1 2 3 4 1 2 5 1 2 3 4 5
+=== TESTES AUTOMATICOS ===
+Executando Teste 1: Sequencia Basica
+Memoria: 3 frames | Sequencia: 1 2 3 4 1 2 5 1 2 3 4 5
+Algoritmo: Clock
 
 Step 1: Ref=1 | MISS | [1*][ ][ ] | Clock=1 | Faults=1
 Step 2: Ref=2 | MISS | [1*][2*][ ] | Clock=2 | Faults=2  
@@ -89,20 +98,50 @@ Step 10: Ref=3 | MISS | [5 ][3*][2 ] | Clock=2 | Faults=8
 Step 11: Ref=4 | MISS | [5 ][3*][4*] | Clock=0 | Faults=9
 Step 12: Ref=5 | HIT  | [5*][3*][4*] | Clock=0 | Faults=9
 
-Resultado do Teste 1:
-- Total de referências: 12
+Resultado do Teste 1 (Clock):
+- Total de referencias: 12
 - Page Faults: 9  
 - Taxa de Hit: 25.00%
 
-=== COMPARAÇÃO COM OUTROS ALGORITMOS ===
-Algoritmo Clock: 9 page faults (75.00% miss rate)
-Algoritmo FIFO:  10 page faults (83.33% miss rate)  
-Algoritmo Ótimo: 7 page faults (58.33% miss rate)
+Executando Teste 1 com Segunda Chance:
+Resultado do Teste 1 (Segunda Chance):
+- Total de referencias: 12
+- Page Faults: 9
+- Taxa de Hit: 25.00%
 
-Resultado: Clock teve melhor desempenho que FIFO!
+=== COMPARACAO COM OUTROS ALGORITMOS ===
+Algoritmo Clock:        9 page faults (75.00% miss rate)
+Algoritmo Segunda Chance: 9 page faults (75.00% miss rate)
+Algoritmo FIFO:         10 page faults (83.33% miss rate)  
+Algoritmo Otimo:        7 page faults (58.33% miss rate)
 
-Escolha uma opção: 5
+Resultado: Clock e Segunda Chance tiveram desempenho identico e superior ao FIFO!
+
+Escolha uma opção: 7
 
 Programa finalizado. Obrigado por usar o simulador!
 
 === FIM DO EXEMPLO ===
+
+=== COMANDOS PARA NOVA ESTRUTURA ===
+
+Compilacao:
+$ make                      # Linux/macOS
+$ mingw32-make             # Windows
+
+Execucao:
+$ ./bin/simulator          # Linux/macOS
+$ bin\simulator.exe        # Windows
+
+Estrutura de diretorios:
+src/
+├── include/               # Headers (.h)
+├── lib/                   # Implementacoes (.cpp)
+└── app/                   # Aplicacao principal
+
+obj/                       # Arquivos objeto (gerados)
+├── lib/
+└── app/
+
+bin/                       # Executavel (gerado)
+└── simulator.exe

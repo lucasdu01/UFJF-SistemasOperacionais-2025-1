@@ -27,23 +27,31 @@ Ambos simulam o gerenciamento de memória virtual, permitindo comparação diret
 ```
 TrabalhoPratico/
 ├── src/                           # Código fonte
-│   ├── ClockAlgorithm.cpp         # Implementação do algoritmo Clock
-│   ├── ClockAlgorithm.h           # Classe do algoritmo Clock
-│   ├── SecondChanceAlgorithm.cpp  # Implementação do algoritmo Segunda Chance
-│   ├── SecondChanceAlgorithm.h    # Classe do algoritmo Segunda Chance
-│   ├── MemoryManager.cpp          # Gerenciador de memória (ambos algoritmos)
-│   ├── MemoryManager.h            # Classe do gerenciador
-│   └── main.cpp                   # Programa principal e interface
-├── docs/                          # Documentação
-│   ├── algoritmo_clock.md         # Explicação detalhada dos algoritmos
-│   └── manual_uso.md              # Manual de compilação e uso
-├── tests/                         # Casos de teste
-│   └── test_cases.txt             # Sequências de teste
-├── examples/                      # Exemplos de execução
-│   └── exemplo_saida.txt          # Exemplo de saída do programa
-├── obj/                           # Arquivos objeto (gerados)
-├── bin/                           # Executáveis (gerados)
-└── Makefile                       # Automação de compilação
+│   ├── include/                   # Arquivos header (.h)
+│   │   ├── ClockAlgorithm.h      # Classe do algoritmo Clock
+│   │   ├── SecondChanceAlgorithm.h # Classe do algoritmo Segunda Chance
+│   │   └── MemoryManager.h       # Classe do gerenciador
+│   ├── lib/                      # Implementações (.cpp)
+│   │   ├── ClockAlgorithm.cpp    # Implementação do algoritmo Clock
+│   │   ├── SecondChanceAlgorithm.cpp # Implementação do algoritmo Segunda Chance
+│   │   └── MemoryManager.cpp     # Gerenciador de memória (ambos algoritmos)
+│   └── app/                      # Aplicação principal
+│       └── main.cpp              # Programa principal e interface
+├── docs/                         # Documentação
+│   ├── algoritmo_clock.md        # Explicação detalhada do algoritmo Clock
+│   ├── algoritmo_secondChance.md # Explicação detalhada do algoritmo Segunda Chance
+│   ├── casos_teste.md            # Casos de teste e validação
+│   └── manual_uso.md             # Manual de compilação e uso
+├── tests/                        # Casos de teste
+│   └── test_cases.txt            # Sequências de teste
+├── examples/                     # Exemplos de execução
+│   └── exemplo_execucao.txt      # Exemplo prático de execução
+├── obj/                          # Arquivos objeto (gerados)
+│   ├── lib/                      # Objetos das implementações
+│   └── app/                      # Objetos da aplicação
+├── bin/                          # Executáveis (gerados)
+│   └── simulator.exe             # Executável principal
+└── Makefile                      # Automação de compilação
 ```
 
 ## ⭐ Principais Características
@@ -87,8 +95,11 @@ mingw32-make run
 
 ### Compilação Manual (alternativa)
 ```bash
-# Compilação direta
-g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
+# Criar diretórios necessários
+mkdir -p obj/lib obj/app bin
+
+# Compilação com nova estrutura
+g++ -std=c++11 -Wall -Wextra -O2 -Isrc/include src/lib/*.cpp src/app/*.cpp -o bin/simulator
 ```
 
 ## 🎮 Como Usar
@@ -115,6 +126,7 @@ g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
 2. **Selecione o algoritmo** (Clock ou Segunda Chance)
 3. **Execute testes automáticos** para ver comparações
 4. **Teste simulação interativa** com suas sequências
+5. **Use modo debug** para análise detalhada passo a passo
 
 ## 📈 Exemplos de Uso
 
@@ -129,6 +141,30 @@ g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
 ```bash
 # Sequência: 1 1 1 2 2 2 3 3 3
 # Ambos algoritmos devem ter alta taxa de hit (66%+)
+```
+
+## 🛠️ Comandos de Desenvolvimento
+
+### Limpeza e Recompilação
+```bash
+# Limpar arquivos gerados
+make clean
+
+# Recompilar completamente
+make clean && make
+
+# Executar com verbose (debug de compilação)
+make VERBOSE=1
+```
+
+### Execução
+```bash
+# Executar diretamente
+./bin/simulator      # Linux/macOS
+bin\simulator.exe    # Windows
+
+# Via Makefile
+make run
 ```
 
 ## 🔍 Características Técnicas Implementadas
@@ -152,16 +188,28 @@ g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
 - **MemoryManager**: Gerenciador unificado, suporta ambos algoritmos
 - **Main**: Interface do usuário e controle de fluxo
 
+### 📁 **Organização Profissional**
+O projeto segue **padrões profissionais** de desenvolvimento C++:
+- **Separação clara**: Headers (`.h`) em `src/include/`, implementações (`.cpp`) em `src/lib/`
+- **Compilação modular**: Apenas arquivos modificados são recompilados
+- **Include paths**: Configuração adequada com `-Isrc/include`
+- **Escalabilidade**: Estrutura permite fácil extensão e manutenção
+
 ### 🧪 **Testes Implementados**
 1. **Teste Básico**: Sequência mista para comparação geral
 2. **Localidade Temporal**: Teste de eficiência com repetições
 3. **Pior Caso**: Sequência sem reutilização
-4. **Comparações**: FIFO, Ótimo, Clock vs Segunda Chance
+4. **Working Set**: Teste com conjunto de trabalho bem definido
+5. **Comparações**: FIFO, Ótimo, Clock vs Segunda Chance
+6. **Demonstração**: Casos que mostram diferenças entre algoritmos
 
 ## 📚 Documentação Adicional
 
-- [`docs/algoritmo_clock.md`](docs/algoritmo_clock.md) - Explicação detalhada dos algoritmos
+- [`docs/algoritmo_clock.md`](docs/algoritmo_clock.md) - Explicação detalhada do algoritmo Clock
+- [`docs/algoritmo_secondChance.md`](docs/algoritmo_secondChance.md) - Explicação detalhada do algoritmo Segunda Chance
+- [`docs/casos_teste.md`](docs/casos_teste.md) - Casos de teste e validação
 - [`docs/manual_uso.md`](docs/manual_uso.md) - Manual completo de compilação e uso
+- [`examples/exemplo_execucao.txt`](examples/exemplo_execucao.txt) - Exemplo prático de execução
 
 ## 🎯 Objetivos Acadêmicos Atendidos
 
@@ -178,7 +226,9 @@ g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
 **Tema:** 28 - Algoritmos de Substituição de Página  
 **Tecnologias:** C++11, Make, Documentação Markdown
 
-### Como funciona:
+## 🔬 Detalhes Técnicos dos Algoritmos
+
+### 🕐 **Algoritmo Clock**
 1. Mantém um ponteiro circular (relógio) nos frames de memória
 2. Quando precisa substituir uma página:
    - Verifica o bit de referência da página apontada
@@ -186,10 +236,19 @@ g++ -std=c++11 -Wall -Wextra -O2 -I./src ./src/*.cpp -o ./bin/simulator.exe
    - Se bit = 0: substitui a página
 3. Continua até encontrar uma página com bit = 0
 
-## Referências
+### 📋 **Algoritmo Segunda Chance**
+1. Mantém páginas em ordem FIFO (fila)
+2. Quando precisa substituir uma página:
+   - Examina a página mais antiga da fila
+   - Se bit = 1: limpa o bit e move para o final da fila
+   - Se bit = 0: substitui a página
+3. Continua até encontrar uma página com bit = 0
+
+## 📖 Referências
 
 - Tanenbaum, A. S. "Modern Operating Systems"
 - Silberschatz, A. "Operating System Concepts"
+- William Stallings. "Operating Systems: Internals and Design Principles"
 
 ---
 *Trabalho desenvolvido para a disciplina de Sistemas Operacionais - UFJF*
