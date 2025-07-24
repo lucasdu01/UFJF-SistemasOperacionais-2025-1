@@ -1,0 +1,46 @@
+# Casos de Teste para Algoritmo Clock
+
+## Teste 1: Sequência Básica
+# Memória: 3 frames
+# Sequência: 1 2 3 4 1 2 5 1 2 3 4 5
+# Objetivo: Testar comportamento básico do algoritmo
+
+config 3
+sequence 1 2 3 4 1 2 5 1 2 3 4 5
+end
+
+## Teste 2: Localidade Temporal
+# Memória: 4 frames  
+# Sequência: 1 1 1 2 2 2 3 3 3 4 4 4
+# Objetivo: Testar eficiência com referências repetidas
+
+config 4
+sequence 1 1 1 2 2 2 3 3 3 4 4 4
+end
+
+## Teste 3: Pior Caso
+# Memória: 3 frames
+# Sequência: 1 2 3 4 5 6 7 8 9
+# Objetivo: Forçar page fault a cada referência
+
+config 3
+sequence 1 2 3 4 5 6 7 8 9
+end
+
+## Teste 4: Padrão de Referência Circular
+# Memória: 4 frames
+# Sequência: 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+# Objetivo: Testar comportamento com padrão previsível
+
+config 4
+sequence 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5
+end
+
+## Teste 5: Referências Misturadas
+# Memória: 5 frames
+# Sequência: 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1
+# Objetivo: Simular padrão realista de acesso
+
+config 5
+sequence 7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1
+end
