@@ -1,6 +1,7 @@
 #ifndef MEMORY_MANAGER_H
 #define MEMORY_MANAGER_H
 
+#include "PageReplacementAlgorithm.h"
 #include "ClockAlgorithm.h"
 #include "SecondChanceAlgorithm.h"
 #include <vector>
@@ -72,7 +73,7 @@ public:
     void setAlgorithm(AlgorithmType algorithm);
     
     // Metodos de consulta
-    const Statistics& getStatistics() const;
+    const AlgorithmStatistics& getStatistics() const;
     const std::vector<ReferenceInfo>& getHistory() const { return referenceHistory; }
     int getPhysicalMemorySize() const;
     int getVirtualMemorySize() const { return virtualMemorySize; }

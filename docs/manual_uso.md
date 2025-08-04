@@ -1,424 +1,225 @@
-# Manual de Compilação e Uso - Simulador Clock & Segunda Chance
+# Manual de Uso - Simulador de Algoritmos de Substituição de Página
 
-## 📋 Visão Geral
+## 🚀 Início Rápido (3 Passos)
 
-Este manual cobre a compilação e uso do simulador que implementa **dois algoritmos de substituição de página**:
-- **🕐 Clock (Relógio)**: Buffer circular com ponteiro
-- **📋 Segunda Chance**: Lista linear com movimento de páginas
-
-## 🔧 Requisitos do Sistema
-
-### Linux/Unix/macOS:
-- **GCC**: versão 4.9+ com suporte a C++11
-- **Make**: Para automação de compilação
-- **Terminal**: Para execução
-
-### Windows:
-- **MinGW-w64**: Compilador GCC para Windows
-- **mingw32-make**: Versão Windows do Make
-- **PowerShell/CMD**: Para execução
-
-## 📦 Instalação das Dependências
-
-### Ubuntu/Debian:
+### 1️⃣ **Compilar**
 ```bash
-sudo apt update
-sudo apt install g++ make build-essential
-```
-
-### CentOS/RHEL/Fedora:
-```bash
-sudo yum install gcc-c++ make
-# ou para versões mais novas:
-sudo dnf install gcc-c++ make
-```
-
-### Windows (MinGW):
-```powershell
-# Opção 1: Via Chocolatey
-choco install mingw
-
-# Opção 2: Download direto
-# Baixar de: https://www.mingw-w64.org/
-```
-
-### macOS:
-```bash
-# Via Homebrew
-brew install gcc make
-
-# Via Xcode Command Line Tools
-xcode-select --install
-```
-
----
-
-## 🚀 Compilação
-
-### ⭐ Método 1: Makefile (Recomendado)
-
-#### Linux/macOS:
-```bash
-# Navegar para o projeto
-cd TrabalhoPratico
-
-# Compilar
-make
-
-# Executar
-make run
-```
-
-#### Windows (MinGW):
-```cmd
-# Navegar para o projeto
-cd TrabalhoPratico
-
-# Compilar
+# Windows (PowerShell/CMD)
 mingw32-make
 
-# Executar  
+# Linux/macOS
+make
+```
+
+### 2️⃣ **Executar**
+```bash
+# Windows
 mingw32-make run
-```
 
-### 🔧 Método 2: Compilação Manual
-
-#### Compilação Completa (Uma linha):
-```bash
-# Linux/macOS/Windows
-g++ -std=c++11 -Wall -Wextra -O2 -Isrc/include src/lib/*.cpp src/app/*.cpp -o ./bin/simulator
-```
-
-#### Compilação Detalhada (Passo a passo):
-```bash
-# Criar diretórios
-mkdir -p obj/lib obj/app bin
-
-# Compilar cada arquivo
-g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/ClockAlgorithm.cpp -o obj/lib/ClockAlgorithm.o
-g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/SecondChanceAlgorithm.cpp -o obj/lib/SecondChanceAlgorithm.o
-g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/lib/MemoryManager.cpp -o obj/lib/MemoryManager.o
-g++ -Wall -Wextra -std=c++11 -g -Isrc/include -c src/app/main.cpp -o obj/app/main.o
-
-# Linkar
-g++ obj/lib/*.o obj/app/*.o -o bin/simulator
-```
-
-### 🧹 Comandos de Limpeza
-```bash
-# Makefile
-make clean
-
-# Manual
-rm -rf obj bin  # Linux/macOS
-rmdir /s obj bin  # Windows
-```
-
----
-
-## 🎮 Execução e Uso
-
-### Executar o Programa
-```bash
-# Via Makefile
+# Linux/macOS  
 make run
-
-# Diretamente
-./bin/simulator      # Linux/macOS
-bin\simulator.exe    # Windows
 ```
 
-### 📋 **Menu Principal**
-```
-╔══════════════════════════════════════════════════════════╗
-║        SIMULADOR ALGORITMOS DE SUBSTITUICAO             ║
-║          Sistemas Operacionais - UFJF - 2025.1          ║
-║     Tema 28: Clock & Segunda Chance                     ║
-╠══════════════════════════════════════════════════════════╣
-║  1. Configurar parametros de memoria                    ║
-║  2. Selecionar algoritmo                                ║
-║  3. Executar simulacao interativa                       ║
-║  4. Executar testes automaticos                         ║
-║  5. Visualizar estatisticas                             ║
-║  6. Ajuda                                               ║
-║  7. Sair                                                ║
-╚══════════════════════════════════════════════════════════╝
-```
-
-### 🎯 **Fluxo de Uso Recomendado**
-
-#### 1. **Primeira Execução**
-```bash
-./bin/simulator
-# 1. Configure a memória (recomendado: 3-5 frames)
-# 2. Selecione algoritmo (Clock ou Segunda Chance) 
-# 3. Execute testes automáticos
-```
-
-#### 2. **Experimentação**
-```bash
-# 3. Execute simulação interativa
-# Digite sequências como: 1 2 3 4 1 2 5
-# 4. Visualize estatísticas
-# 5. Troque algoritmo e compare
-```
+### 3️⃣ **Usar**
+- **Opção 4**: Executar testes automáticos (recomendado para começar)
+- **Opção 3**: Simulação interativa (digite sequências como: `1 2 3 4 1 2 5`)
 
 ---
 
-## 📖 Guia de Uso das Funcionalidades
+## 📋 O que o Programa Faz
 
-### 🔧 **1. Configurar Parâmetros de Memória**
-- **Frames de Memória Física**: 3-20 (recomendado: 3-10)
-- **Páginas de Memória Virtual**: 10-100 (recomendado: 20-50)
-- **Modo Debug**: Ativa saída detalhada passo a passo
+Este simulador demonstra **dois algoritmos de substituição de página**:
 
-### 🔄 **2. Selecionar Algoritmo**
-- **Clock**: Buffer circular, ponteiro fixo, eficiente
-- **Segunda Chance**: Lista linear, movimento de páginas, conceitual
+### 🕐 **Algoritmo Clock**
+- **Como funciona**: Ponteiro circular "gira" pela memória
+- **Vantagem**: Mais rápido, usado em sistemas reais
+- **Estrutura**: Buffer circular fixo
 
-### 🎮 **3. Simulação Interativa**
+### 📋 **Algoritmo Segunda Chance**  
+- **Como funciona**: Lista linear, páginas se movem fisicamente
+- **Vantagem**: Mais fácil de entender, didático
+- **Estrutura**: Lista que reorganiza páginas
+
+**Ambos melhoram o FIFO** dando "segunda chance" a páginas recentemente usadas.
+
+---
+
+## 🎮 Como Usar o Programa
+
+### **Menu Principal**
 ```
-Entrada: 1 2 3 4 1 2 5
-Saída: Estado da memória após cada referência + estatísticas
+1. Configurar memoria     → Ajustar número de frames (recomendado: 3-5)
+2. Selecionar algoritmo   → Clock ou Segunda Chance  
+3. Simulacao interativa   → Digite suas próprias sequências
+4. Testes automaticos    → Ver comparações prontas ⭐ COMECE AQUI
+5. Ver estatisticas       → Resultados dos testes
+6. Ajuda                  → Este manual
+7. Sair                   → Fechar programa
 ```
 
-### 🧪 **4. Testes Automáticos**
-- **Teste Básico**: Sequência mista para comparação geral
-- **Localidade Temporal**: Repetições para alta taxa de hit  
-- **Pior Caso**: Sem reutilização, taxa de hit baixa
-- **Comparações**: FIFO, Ótimo, Clock vs Segunda Chance
-
-### 📊 **5. Estatísticas**
-- Total de referências processadas
-- Page faults e page hits
-- Taxa de hit em porcentagem
-- Histórico das últimas referências
+### **Fluxo Recomendado para Iniciantes**
+```
+1. Execute o programa
+2. Escolha "4" (Testes automáticos)  
+3. Veja os resultados de Clock vs Segunda Chance
+4. Experimente "3" (Simulação interativa)
+5. Digite: 1 2 3 4 1 2 5
+6. Compare os dois algoritmos
+```
 
 ---
 
 ## 💡 Exemplos Práticos
 
 ### **Exemplo 1: Teste Básico**
-```bash
-Memória: 3 frames
-Sequência: 1 2 3 4 1 2 5 1 2 3 4 5
-Resultado esperado: ~9 page faults
+```
+Entrada: 1 2 3 4 1 2 5  (com 3 frames)
+Resultado típico: 6-7 page faults
+O que acontece: Páginas 1,2,3 preenchem memória, depois há substituições
 ```
 
-### **Exemplo 2: Localidade Temporal**
-```bash
-Memória: 3 frames  
-Sequência: 1 1 1 2 2 2 3 3 3 4 4 4
-Resultado esperado: Alta taxa de hit (66%+)
+### **Exemplo 2: Boa Localidade Temporal**
+```
+Entrada: 1 1 1 2 2 2 3 3 3  (com 3 frames)
+Resultado típico: 3 page faults, 6 hits
+O que acontece: Repetições geram muitos hits
 ```
 
-### **Exemplo 3: Comparação de Algoritmos**
-```bash
-Teste automático mostra:
-Clock:        9 page faults
-Segunda Chance: 9 page faults  
-Diferença: 0 (desempenho igual)
-```
-
----
-
-## 📊 Interpretação dos Resultados
-
-### **Saída Típica (Modo Debug)**
-```
---- Referencia 1: Pagina 1 ---
-MISS: Pagina 1 nao encontrada
-Adicionada na posicao 0
-Memoria: [1*] [  ] [  ] | Clock: 1 | Faults: 1, Hits: 0
-
---- Referencia 2: Pagina 2 ---  
-MISS: Pagina 2 nao encontrada
-Adicionada na posicao 1
-Memoria: [1 ] [2*] [  ] | Clock: 2 | Faults: 2, Hits: 0
-```
-
-### **Legenda dos Símbolos**
-- `[1*]`: Página 1 com bit de referência ativado
-- `[2 ]`: Página 2 com bit de referência desativado  
-- `[ ]`: Frame vazio
-- `Clock: 2`: Posição atual do ponteiro (algoritmo Clock)
-- `MISS`: Page fault ocorreu
-- `HIT`: Página encontrada na memória
-
-### **Estatísticas Finais**
-```
-=== ESTATISTICAS CLOCK ===
-Total de referencias: 12
-Page Faults: 9  
-Page Hits: 3
-Taxa de Hit: 25.00%
-Taxa de Fault: 75.00%
+### **Exemplo 3: Pior Caso**
+```  
+Entrada: 1 2 3 4 5 6 7 8 9  (com 3 frames)
+Resultado típico: 9 page faults, 0 hits
+O que acontece: Sem reutilização = máximo de page faults
 ```
 
 ---
 
-## 🔧 Solução de Problemas
+## 📊 Como Interpretar os Resultados
 
-### **Erro: 'g++' não reconhecido**
-**Linux/macOS:**
-```bash
-# Ubuntu/Debian
-sudo apt install build-essential
-
-# CentOS/RHEL  
-sudo yum install gcc-c++
-
-# macOS
-xcode-select --install
+### **Saída Típica**
+```
+=== Referencia 4: Pagina 1 ===
+HIT: Pagina 1 encontrada
+Memoria: [1*][2 ][3 ] | Hits: 1, Faults: 3
 ```
 
-**Windows:**
+### **Símbolos**
+- `[1*]` = Página 1 com bit de referência ativo (recém-usada)
+- `[2 ]` = Página 2 com bit de referência inativo  
+- `[ ]` = Frame vazio
+- `HIT` = Página encontrada na memória (bom!)
+- `MISS` = Página não encontrada, precisa carregar (page fault)
+
+### **Métricas Importantes**
+- **Taxa de Hit**: % de referências que encontraram a página na memória
+- **Page Faults**: Quantas vezes precisou carregar página do disco
+- **Alta taxa de hit = melhor desempenho**
+
+---
+
+## 🔧 Solução de Problemas Rápida
+
+### **Erro: 'mingw32-make' não reconhecido (Windows)**
 ```bash
 # Instalar MinGW-w64
 # Adicionar ao PATH: C:\mingw64\bin
+# Ou usar: choco install mingw
 ```
 
-### **Erro: 'make' não reconhecido**
-**Linux:**
+### **Erro: 'make' não reconhecido (Linux)**
 ```bash
-sudo apt install make
+sudo apt install build-essential  # Ubuntu
+sudo yum install gcc-c++ make     # CentOS
 ```
 
-**Windows:**
+### **Programa não compila**
 ```bash
-# Use mingw32-make em vez de make
-mingw32-make
+# Verificar se tem os arquivos necessários
+ls src/include/  # deve ter arquivos .h
+ls src/lib/      # deve ter arquivos .cpp
+ls src/app/      # deve ter main.cpp
+
+# Limpar e tentar novamente
+make clean
+make
 ```
 
-### **Erro: 'No such file or directory'**
-```bash
-# Verificar estrutura de diretórios (nova estrutura)
-ls -la src/include/    # deve mostrar arquivos .h
-ls -la src/lib/        # deve mostrar arquivos .cpp  
-ls -la src/app/        # deve mostrar main.cpp
-
-# Criar diretórios necessários  
-mkdir -p obj/lib obj/app bin
-```
-
-### **Erro de Compilação C++11**
-```bash
-# Verificar versão do GCC
-g++ --version
-
-# Forçar C++11 (nova estrutura)
-g++ -std=c++11 -Wall -Wextra -Isrc/include src/lib/*.cpp src/app/*.cpp -o ./bin/simulator
-```
-
-### **Erro de Permissão (Linux/macOS)**
-```bash
-chmod +x bin/simulator
-```
-
-### **Programa trava ou não responde**
-- Pressione `Ctrl+C` para interromper
-- Verifique se inseriu entrada válida
-- Evite valores extremos (>100 frames)
+### **Programa trava**
+- Pressione `Ctrl+C`
+- Reinicie e tente valores menores (3-5 frames)
 
 ---
 
-## 🎯 Comandos Úteis
+## ⚡ Comandos Úteis
 
 ### **Desenvolvimento**
 ```bash
-# Recompilar após mudanças
-make clean && make
-
-# Executar com redirecionamento
-make run > output.txt 2>&1
-
-# Debug com GDB (Linux/macOS)
-gdb ./bin/simulator
+make clean    # Limpar arquivos compilados
+make         # Compilar
+make run     # Executar
+make test    # Executar com casos de teste
 ```
 
-### **Análise de Performance**
+### **Análise Rápida**
 ```bash
-# Medir tempo de execução
-time ./bin/simulator
+# Redirecionar saída para arquivo
+make run > resultados.txt
 
-# Verificar uso de memória (Linux)
-valgrind --tool=memcheck ./bin/simulator
+# Executar teste específico  
+echo "1 2 3 4 1 2 5" | make run
 ```
 
 ---
 
-## 📁 Estrutura de Arquivos Gerados
+## 🎯 Principais Diferenças dos Algoritmos
+
+| Aspecto | Clock | Segunda Chance |
+|---------|-------|----------------|
+| **Velocidade** | Mais rápido | Mais lento |
+| **Compreensão** | Moderada | Mais fácil |
+| **Uso Real** | Sistemas operacionais | Ensino/didático |
+| **Estrutura** | Circular fixa | Lista móvel |
+| **Movimento** | Só ponteiro | Páginas inteiras |
+
+### **Quando usar cada um?**
+- **Clock**: Quando performance importa (sistemas reais)
+- **Segunda Chance**: Quando clareza importa (aprendizado, debug)
+
+---
+
+## 📁 Estrutura do Projeto
 
 ```
-TrabalhoPratico/
-├── obj/                    # Arquivos objeto (gerados)
-│   ├── lib/               # Objetos das bibliotecas
-│   │   ├── ClockAlgorithm.o
-│   │   ├── SecondChanceAlgorithm.o
-│   │   └── MemoryManager.o
-│   └── app/               # Objetos da aplicação
-│       └── main.o
-├── bin/                    # Executáveis (gerados)
-│   └── simulator.exe
-└── logs/                   # Logs opcionais
-    ├── debug.log
-    └── results.txt
+projeto/
+├── src/
+│   ├── include/     # Arquivos .h (interfaces)
+│   ├── lib/         # Arquivos .cpp (implementações)  
+│   └── app/         # main.cpp (programa principal)
+├── tests/           # Casos de teste
+├── docs/            # Documentação
+├── Makefile         # Automação de compilação
+└── README.md        # Informações gerais
 ```
 
 ---
 
-## �️ Estrutura do Código Organizada
+## 🎓 Dicas para Estudantes
 
-O projeto segue **padrões profissionais** de organização de código C++:
+### **Para Entender os Algoritmos**
+1. **Comece com poucos frames** (3-4) para ver melhor o comportamento
+2. **Use modo debug** para ver cada passo detalhadamente
+3. **Compare resultados** entre Clock e Segunda Chance
+4. **Teste sequências diferentes** (com/sem repetições)
 
-### **📁 Diretórios de Código**
-```
-src/
-├── include/          # Headers (.h) - Declarações de classes e funções
-│   ├── ClockAlgorithm.h
-│   ├── SecondChanceAlgorithm.h  
-│   └── MemoryManager.h
-├── lib/             # Implementações (.cpp) - Código das bibliotecas
-│   ├── ClockAlgorithm.cpp
-│   ├── SecondChanceAlgorithm.cpp
-│   └── MemoryManager.cpp
-└── app/             # Aplicação principal
-    └── main.cpp     # Interface do usuário e controle
-```
+### **Para Apresentações**
+1. **Prepare sequências interessantes**: 
+   - `1 2 3 1 4` (mostra segunda chance)
+   - `1 1 1 2 2 2` (localidade temporal)
+   - `1 2 3 4 5 6` (pior caso)
 
-### **🔗 Dependências de Includes**
-- **`lib/*.cpp`** incluem `../include/*.h`
-- **`app/main.cpp`** inclui `../include/MemoryManager.h`
-- **Makefile** configurado com `-Isrc/include`
-
-### **⚙️ Vantagens da Organização**
-- **Separação clara** entre interface e implementação
-- **Compilação modular** - apenas arquivos modificados são recompilados
-- **Reutilização** - headers podem ser usados em outros projetos
-- **Manutenibilidade** - estrutura profissional e escalável
+### **Para Relatórios**
+- **Documente diferenças** quando Clock ≠ Segunda Chance
+- **Explique por que** certas sequências geram mais/menos page faults
+- **Compare com FIFO teórico** (sempre pior que Clock/Segunda Chance)
 
 ---
-
-## �🎓 Dicas Acadêmicas
-
-### **Para Análise de Algoritmos**
-1. Execute testes com diferentes tamanhos de memória
-2. Compare as taxas de hit entre Clock e Segunda Chance
-3. Analise padrões de localidade temporal
-4. Documente diferenças encontradas
-
-### **Para Apresentação**
-1. Use modo debug para demonstração passo a passo
-2. Prepare sequências interessantes que mostrem diferenças
-3. Explique por que os resultados diferem (quando diferem)
-
-### **Para Relatório**
-- Salve saídas com redirecionamento: `./program > relatorio.txt`
-- Tire screenshots do menu e execução
-- Compare com algoritmos teóricos (FIFO, LRU, Ótimo)
-
----
-
-**Manual atualizado para:** Sistemas Operacionais - UFJF 2025.1  
-**Projeto:** Tema 28 - Algoritmos Clock & Segunda Chance  
-**Versão:** 2.0 - Implementação Dual

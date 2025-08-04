@@ -170,12 +170,11 @@ std::string MemoryManager::getCurrentAlgorithmName() const {
 /**
  * @brief Obtem estatisticas do algoritmo ativo
  */
-const Statistics& MemoryManager::getStatistics() const {
+const AlgorithmStatistics& MemoryManager::getStatistics() const {
     if (currentAlgorithm == AlgorithmType::CLOCK) {
         return clockAlgorithm->getStatistics();
     } else {
-        static Statistics stats = secondChanceAlgorithm->getStatistics();
-        return stats;
+        return secondChanceAlgorithm->getStatistics();
     }
 }
 

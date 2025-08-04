@@ -8,7 +8,7 @@
  * @param debug Habilita modo debug
  */
 ClockAlgorithm::ClockAlgorithm(int size, bool debug) 
-    : frames(size), clockHand(0), memorySize(size), debugMode(debug) {
+    : PageReplacementAlgorithm(size, debug), frames(size), clockHand(0) {
     
     if (size <= 0) {
         throw std::invalid_argument("Tamanho da memoria deve ser positivo");
@@ -191,16 +191,6 @@ void ClockAlgorithm::displayMemory() const {
     }
     
     std::cout << " | Clock: " << clockHand;
-}
-
-/**
- * @brief Exibe as estatisticas do algoritmo
- */
-void ClockAlgorithm::displayStatistics() const {
-    std::cout << std::fixed << std::setprecision(2);
-    std::cout << " | Faults: " << stats.pageFaults
-              << ", Hits: " << stats.hits
-              << ", Taxa Hit: " << stats.getHitRate() << "%";
 }
 
 /**

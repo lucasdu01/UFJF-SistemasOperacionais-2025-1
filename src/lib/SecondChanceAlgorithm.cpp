@@ -1,11 +1,10 @@
 #include "../include/SecondChanceAlgorithm.h"
-#include "../include/ClockAlgorithm.h"  // Para usar a estrutura Statistics
 
 /**
  * @brief Construtor do algoritmo Segunda Chance
  */
 SecondChanceAlgorithm::SecondChanceAlgorithm(int size, bool debug)
-    : memorySize(size), pageFaults(0), pageHits(0), totalReferences(0), debugMode(debug) {
+    : PageReplacementAlgorithm(size, debug) {
     
     if (size <= 0) {
         throw std::invalid_argument("Tamanho da memoria deve ser positivo");
@@ -48,7 +47,7 @@ void SecondChanceAlgorithm::moveToEnd(int index) {
 }
 
 /**
- * @brief Exibe o estado atual da memoria
+ * @brief Exibe o estado atual da memória
  */
 void SecondChanceAlgorithm::displayMemoryState() const {
     std::cout << "Memoria: ";
@@ -68,32 +67,36 @@ void SecondChanceAlgorithm::displayMemoryState() const {
         std::cout << "] ";
     }
     
-    std::cout << "| Faults: " << pageFaults 
-              << ", Hits: " << pageHits 
-              << ", Taxa: " << std::fixed << std::setprecision(2) 
-              << getHitRate() << "%";
+    displayStatistics();
 }
 
 /**
- * @brief Referencia uma pagina (metodo principal do algoritmo)
- * @param pageNumber Numero da pagina a referenciar
+ * @brief Implementação do displayMemory para interface
+ */
+void SecondChanceAlgorithm::displayMemory() const {
+    displayMemoryState();
+}
+
+/**
+ * @brief Referencia uma página (método principal do algoritmo)
+ * @param pageNumber Número da página a referenciar
  * @return true se houve page fault, false se foi hit
  */
 bool SecondChanceAlgorithm::referencePage(int pageNumber) {
-    totalReferences++;
+    stats.totalReferences++;
     
     if (debugMode) {
-        std::cout << "\n--- Referencia " << totalReferences 
+        std::cout << "\n--- Referencia " << stats.totalReferences 
                   << ": Pagina " << pageNumber << " ---\n";
     }
     
-    // Procura a pagina na memoria
+    // Procura a página na memória
     int pageIndex = findPage(pageNumber);
     
     if (pageIndex != -1) {
-        // PAGE HIT: pagina encontrada
-        pageHits++;
-        memory[pageIndex].referenceBit = true;  // Ativa bit de referencia
+        // PAGE HIT: página encontrada
+        stats.hits++;
+        memory[pageIndex].referenceBit = true;  // Ativa bit de referência
         
         if (debugMode) {
             std::cout << "HIT: Pagina " << pageNumber << " encontrada na posicao " 
@@ -105,19 +108,19 @@ bool SecondChanceAlgorithm::referencePage(int pageNumber) {
         return false;
     }
     
-    // PAGE FAULT: pagina nao encontrada
-    pageFaults++;
+    // PAGE FAULT: página não encontrada
+    stats.pageFaults++;
     
     if (debugMode) {
-        std::cout << "MISS: Pagina " << pageNumber << " nao encontrada\n";
+        std::cout << "MISS: Pagina " << pageNumber << " não encontrada\n";
     }
     
-    // Se memoria nao esta cheia, simplesmente adiciona
+    // Se memória não está cheia, simplesmente adiciona
     if (static_cast<int>(memory.size()) < memorySize) {
         memory.push_back(SecondChancePage(pageNumber));
         
         if (debugMode) {
-            std::cout << "Adicionada na posicao " << (memory.size() - 1) << "\n";
+            std::cout << "Adicionada na posição " << (memory.size() - 1) << "\n";
             displayMemoryState();
             std::cout << "\n";
         }
@@ -125,11 +128,11 @@ bool SecondChanceAlgorithm::referencePage(int pageNumber) {
         return true;
     }
     
-    // Memoria cheia: aplicar algoritmo Segunda Chance
+    // Memória cheia: aplicar algoritmo Segunda Chance
     while (true) {
-        // Verifica a primeira pagina da lista
+        // Verifica a primeira página da lista
         if (!memory[0].referenceBit) {
-            // Bit = 0: substitui esta pagina
+            // Bit = 0: substitui esta página
             if (debugMode) {
                 std::cout << "Substituindo pagina " << memory[0].pageNumber 
                           << " (bit=0) por " << pageNumber << "\n";
@@ -138,7 +141,7 @@ bool SecondChanceAlgorithm::referencePage(int pageNumber) {
             memory[0] = SecondChancePage(pageNumber);
             break;
         } else {
-            // Bit = 1: da segunda chance
+            // Bit = 1: dá segunda chance
             if (debugMode) {
                 std::cout << "Segunda chance para pagina " << memory[0].pageNumber 
                           << " (bit=1->0, movendo para o final)\n";
@@ -162,9 +165,7 @@ bool SecondChanceAlgorithm::referencePage(int pageNumber) {
  */
 void SecondChanceAlgorithm::reset() {
     memory.clear();
-    pageFaults = 0;
-    pageHits = 0;
-    totalReferences = 0;
+    stats.reset();
     
     if (debugMode) {
         std::cout << "Segunda Chance resetado\n\n";
@@ -172,47 +173,8 @@ void SecondChanceAlgorithm::reset() {
 }
 
 /**
- * @brief Calcula a taxa de hit
- * @return Taxa de hit em porcentagem
- */
-double SecondChanceAlgorithm::getHitRate() const {
-    if (totalReferences == 0) return 0.0;
-    return (static_cast<double>(pageHits) / totalReferences) * 100.0;
-}
-
-/**
- * @brief Retorna estatisticas em formato compativel
- * @return Estrutura Statistics com os dados atuais
- */
-Statistics SecondChanceAlgorithm::getStatistics() const {
-    Statistics stats;
-    stats.totalReferences = totalReferences;
-    stats.pageFaults = pageFaults;
-    stats.hits = pageHits;
-    return stats;
-}
-
-/**
- * @brief Exibe estatisticas detalhadas
- */
-void SecondChanceAlgorithm::displayStatistics() const {
-    std::cout << "\n=== ESTATISTICAS SEGUNDA CHANCE ===\n";
-    std::cout << "Total de referencias: " << totalReferences << "\n";
-    std::cout << "Page Faults: " << pageFaults << "\n";
-    std::cout << "Page Hits: " << pageHits << "\n";
-    std::cout << "Taxa de Hit: " << std::fixed << std::setprecision(2) 
-              << getHitRate() << "%\n";
-    std::cout << "Taxa de Fault: " << std::fixed << std::setprecision(2) 
-              << (100.0 - getHitRate()) << "%\n";
-    
-    std::cout << "\nEstado atual da memoria:\n";
-    displayMemoryState();
-    std::cout << "\n";
-}
-
-/**
- * @brief Retorna as paginas atualmente na memoria
- * @return Vetor com os numeros das paginas
+ * @brief Retorna as páginas atualmente na memória
+ * @return Vetor com os números das páginas
  */
 std::vector<int> SecondChanceAlgorithm::getCurrentPages() const {
     std::vector<int> pages;
@@ -225,8 +187,8 @@ std::vector<int> SecondChanceAlgorithm::getCurrentPages() const {
 }
 
 /**
- * @brief Verifica se a memoria esta cheia
- * @return true se cheia, false caso contrario
+ * @brief Verifica se a memória está cheia
+ * @return true se cheia, false caso contrário
  */
 bool SecondChanceAlgorithm::isMemoryFull() const {
     return static_cast<int>(memory.size()) >= memorySize;
