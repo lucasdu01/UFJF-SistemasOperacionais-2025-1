@@ -21,10 +21,16 @@ private:
     void runBasicTest();
     void runTemporalLocalityTest();
     void runWorstCaseTest();
+    void runComparisonTests();
+    void runOptimalComparisonTests();
     
+    // Métodos de display visual
+    void displayMainHeader();
+    void displaySectionHeader(const std::string& sectionName);
     void displayTestHeader(const std::string& testName, const std::vector<int>& sequence);
     void displayTestResults(const std::string& testName, const AlgorithmStatistics& stats, 
                            const std::string& description = "");
+    void displayFinalSummary();
 };
 
 #endif // TEST_RUNNER_H
