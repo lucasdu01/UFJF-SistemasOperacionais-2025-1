@@ -194,7 +194,11 @@ int MemoryManager::getPhysicalMemorySize() const {
  * @brief Exibe estado atual da memoria
  */
 void MemoryManager::displayCurrentState() const {
-    std::cout << *clockAlgorithm;
+    if (currentAlgorithm == AlgorithmType::CLOCK) {
+        clockAlgorithm->displayMemory();
+    } else {
+        secondChanceAlgorithm->displayMemory();
+    }
 }
 
 /**

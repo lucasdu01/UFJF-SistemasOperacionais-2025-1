@@ -31,6 +31,11 @@ private:
     void displayTestResults(const std::string& testName, const AlgorithmStatistics& stats, 
                            const std::string& description = "");
     void displayFinalSummary();
+    void displayComparisonTable(const std::vector<std::string>& testNames,
+                               const std::vector<std::vector<int>>& testSequences,
+                               const std::vector<int>& clockResults,
+                               const std::vector<int>& secondChanceResults,
+                               const std::vector<int>& optimalResults);
 };
 
 #endif // TEST_RUNNER_H

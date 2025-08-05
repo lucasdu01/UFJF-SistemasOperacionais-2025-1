@@ -1,5 +1,7 @@
 #include "../include/TestRunner.h"
 #include "../include/SimulatorUI.h"
+#include "../include/ClockAlgorithm.h"
+#include "../include/SecondChanceAlgorithm.h"
 #include <iostream>
 #include <iomanip>
 
@@ -16,19 +18,9 @@ void TestRunner::runAllTests() {
     SimulatorUI::clearScreen();
     displayMainHeader();
     
-    // Seção 1: Testes Básicos
-    displaySectionHeader("SECAO 1: TESTES BASICOS");
-    runBasicTest();
-    runTemporalLocalityTest();
-    runWorstCaseTest();
-    
-    // Seção 2: Comparações Clock vs Second Chance
-    displaySectionHeader("SECAO 2: COMPARACOES CLOCK vs SECOND CHANCE");
+    // Comparação Completa (Clock vs Second Chance vs Ótimo)
+    displaySectionHeader("COMPARACAO COMPLETA DOS ALGORITMOS");
     runComparisonTests();
-    
-    // Seção 3: Comparação com Algoritmo Ótimo (Estudo)
-    displaySectionHeader("SECAO 3: COMPARACAO COM ALGORITMO OTIMO (ESTUDO)");
-    runOptimalComparisonTests();
     
     displayFinalSummary();
     SimulatorUI::waitForUser();
@@ -124,53 +116,68 @@ void TestRunner::displayTestResults(const std::string& testName, const Algorithm
  */
 void TestRunner::runComparisonTests() {
     std::vector<std::vector<int>> testSequences = {
-        {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5},      // Sequência básica
-        {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4},      // Localidade temporal
-        {1, 2, 3, 4, 5, 6, 7, 8, 9},               // Pior caso
-        {1, 2, 3, 1, 2, 3, 1, 2, 3},               // Working set
-        {1, 2, 3, 4, 1, 4, 1, 4, 1, 4},            // Teste específico para diferenças
-        {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2}    // Sequência para evidenciar diferenças
+        {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5},           // Sequência básica
+        {1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4},           // Localidade temporal alta
+        {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},                // Pior caso - sem reutilização
+        {1, 2, 3, 1, 2, 3, 1, 2, 3},                    // Working set pequeno
+        {1, 2, 3, 4, 1, 4, 1, 4, 1, 4},                 // Alternância com favorecimento
+        {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2},        // Sequência irregular
+        {1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8},        // Expansão gradual
+        {5, 4, 3, 2, 1, 5, 4, 3, 2, 1},                 // Padrão reverso
+        {1, 3, 5, 7, 2, 4, 6, 8, 1, 3, 5, 7},           // Intercalação complexa
+        {10, 20, 30, 10, 40, 20, 50, 30, 10, 60},       // Reúso com interferência
+        {1, 2, 1, 3, 1, 4, 1, 5, 1, 6, 1, 7},           // Pivot com página 1
+        {2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 2, 4, 6}        // Duas fases distintas
     };
     
     std::vector<std::string> testNames = {
-        "Comparacao 1: Sequencia Basica",
-        "Comparacao 2: Localidade Temporal", 
-        "Comparacao 3: Pior Caso",
-        "Comparacao 4: Working Set",
-        "Comparacao 5: Teste de Diferenciacao",
-        "Comparacao 6: Sequencia Complexa"
+        "Sequencia Basica",
+        "Localidade Temporal Alta", 
+        "Pior Caso (sem reuso)",
+        "Working Set Pequeno",
+        "Alternancia Favorecida",
+        "Sequencia Irregular",
+        "Expansao Gradual",
+        "Padrao Reverso",
+        "Intercalacao Complexa",
+        "Reuso com Interferencia",
+        "Pivot com Pagina 1",
+        "Duas Fases Distintas"
     };
     
-    std::cout << "NOTA: Clock e Second Chance implementam o mesmo principio\n";
-    std::cout << "      de \"segunda chance\", resultando em performance similar.\n";
-    std::cout << "      Diferencas aparecem na estrutura de dados e ordem.\n\n";
-    
-    std::cout << "EXPLICACAO DAS DIFERENCAS:\n";
-    std::cout << "----------------------------------------\n";
-    std::cout << "| Clock          : Estrutura fixa, melhor para padroes regulares\n";
-    std::cout << "| Second Chance  : Reordena dinamicamente, melhor para padroes complexos\n";
-    std::cout << "| Observacao     : Resultados podem variar conforme a sequencia!\n";
-    std::cout << "----------------------------------------\n\n";
+    // Executar todos os testes e coletar resultados
+    std::vector<int> clockResults, secondChanceResults, optimalResults;
     
     for (size_t i = 0; i < testSequences.size(); ++i) {
-        displayTestHeader(testNames[i], testSequences[i]);
-        memoryManager->compareClockWithSecondChance(testSequences[i]);
-        std::cout << "========================================\n\n";
+        // Testar Clock
+        ClockAlgorithm tempClock(memoryManager->getPhysicalMemorySize(), false);
+        for (int page : testSequences[i]) {
+            tempClock.referencePage(page);
+        }
+        clockResults.push_back(tempClock.getStatistics().pageFaults);
+        
+        // Testar Segunda Chance
+        SecondChanceAlgorithm tempSecondChance(memoryManager->getPhysicalMemorySize(), false);
+        for (int page : testSequences[i]) {
+            tempSecondChance.referencePage(page);
+        }
+        secondChanceResults.push_back(tempSecondChance.getStatistics().pageFaults);
+        
+        // Testar Algoritmo Ótimo
+        OptimalSimulator optimal(memoryManager->getPhysicalMemorySize());
+        optimalResults.push_back(optimal.simulate(testSequences[i]));
     }
+    
+    // Exibir tabela comparativa
+    displayComparisonTable(testNames, testSequences, clockResults, secondChanceResults, optimalResults);
 }
 
 /**
- * @brief Executa comparações com algoritmo ótimo para estudo
+ * @brief Executa comparações com algoritmo ótimo para estudo (não usado mais)
  */
 void TestRunner::runOptimalComparisonTests() {
-    std::vector<int> sequence = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
-    
-    displayTestHeader("Comparacao com Algoritmo Otimo", sequence);
-    std::cout << "PROPOSITO: Demonstrar limite teorico superior de performance\n";
-    std::cout << "          (Para fins educacionais e de analise)\n\n";
-    
-    memoryManager->compareWithOptimal(sequence);
-    std::cout << "========================================\n\n";
+    // Esta função não é mais usada pois a comparação com o ótimo
+    // foi integrada na tabela comparativa principal
 }
 
 /**
@@ -237,4 +244,97 @@ void TestRunner::displayFinalSummary() {
     std::cout << "| Implementacao validada e funcionando!  |\n";
     std::cout << "| Similaridade entre algoritmos e NORMAL |\n";
     std::cout << "===========================================\n\n";
+}
+
+/**
+ * @brief Exibe tabela comparativa dos algoritmos
+ */
+void TestRunner::displayComparisonTable(const std::vector<std::string>& testNames,
+                                       const std::vector<std::vector<int>>& testSequences,
+                                       const std::vector<int>& clockResults,
+                                       const std::vector<int>& secondChanceResults,
+                                       const std::vector<int>& optimalResults) {
+    std::cout << "\n=== TABELA COMPARATIVA DE PAGE FAULTS ===\n\n";
+    
+    // Cabeçalho da tabela
+    std::cout << std::left << std::setw(25) << "Teste"
+              << std::setw(12) << "Clock"
+              << std::setw(15) << "Second Chance"
+              << std::setw(12) << "Otimo"
+              << std::setw(15) << "Melhor Alg." << "\n";
+    
+    std::cout << std::string(80, '-') << "\n";
+    
+    // Linhas da tabela
+    for (size_t i = 0; i < testNames.size(); ++i) {
+        std::string bestAlgorithm;
+        if (clockResults[i] < secondChanceResults[i]) {
+            bestAlgorithm = "Clock";
+        } else if (secondChanceResults[i] < clockResults[i]) {
+            bestAlgorithm = "Second Chance";
+        } else {
+            bestAlgorithm = "Empate";
+        }
+        
+        std::cout << std::left << std::setw(25) << testNames[i]
+                  << std::setw(12) << clockResults[i]
+                  << std::setw(15) << secondChanceResults[i]
+                  << std::setw(12) << optimalResults[i]
+                  << std::setw(15) << bestAlgorithm << "\n";
+    }
+    
+    std::cout << std::string(80, '-') << "\n";
+    
+    // Estatísticas resumidas
+    int clockWins = 0, secondChanceWins = 0, ties = 0;
+    double clockTotal = 0, secondChanceTotal = 0, optimalTotal = 0;
+    
+    for (size_t i = 0; i < clockResults.size(); ++i) {
+        if (clockResults[i] < secondChanceResults[i]) {
+            clockWins++;
+        } else if (secondChanceResults[i] < clockResults[i]) {
+            secondChanceWins++;
+        } else {
+            ties++;
+        }
+        
+        clockTotal += clockResults[i];
+        secondChanceTotal += secondChanceResults[i];
+        optimalTotal += optimalResults[i];
+    }
+    
+    std::cout << "\n=== RESUMO ESTATISTICO ===\n";
+    std::cout << "Clock vitorias       : " << clockWins << "\n";
+    std::cout << "Second Chance vitorias: " << secondChanceWins << "\n";
+    std::cout << "Empates              : " << ties << "\n";
+    std::cout << "Total page faults:\n";
+    std::cout << "  - Clock            : " << (int)clockTotal << "\n";
+    std::cout << "  - Second Chance    : " << (int)secondChanceTotal << "\n";
+    std::cout << "  - Otimo            : " << (int)optimalTotal << "\n";
+    
+    // Eficiência em relação ao ótimo
+    double clockEfficiency = (optimalTotal / clockTotal) * 100.0;
+    double secondChanceEfficiency = (optimalTotal / secondChanceTotal) * 100.0;
+    
+    std::cout << "Eficiencia vs Otimo:\n";
+    std::cout << "  - Clock            : " << std::fixed << std::setprecision(1) 
+              << clockEfficiency << "%\n";
+    std::cout << "  - Second Chance    : " << std::fixed << std::setprecision(1) 
+              << secondChanceEfficiency << "%\n";
+    
+    // Exibir sequências dos testes
+    std::cout << "\n=== SEQUENCIAS DOS TESTES ===\n";
+    std::cout << std::string(60, '-') << "\n";
+    
+    for (size_t i = 0; i < testNames.size(); ++i) {
+        std::cout << std::left << std::setw(25) << testNames[i] << ": ";
+        for (size_t j = 0; j < testSequences[i].size(); ++j) {
+            std::cout << testSequences[i][j];
+            if (j < testSequences[i].size() - 1) std::cout << " ";
+        }
+        std::cout << "\n";
+    }
+    
+    std::cout << std::string(60, '-') << "\n";
+    std::cout << "\n========================================\n\n";
 }
