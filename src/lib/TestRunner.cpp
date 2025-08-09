@@ -97,7 +97,7 @@ void TestRunner::displayTestHeader(const std::string& testName, const std::vecto
  */
 void TestRunner::displayTestResults(const std::string& testName, const AlgorithmStatistics& stats, 
                                    const std::string& description) {
-    std::cout << "RESULTADO:\n";
+    std::cout << "RESULTADO " << testName << ":\n";
     std::cout << "| Total de referencias : " << stats.totalReferences << "\n";
     std::cout << "| Page Faults         : " << stats.pageFaults << "\n";
     std::cout << "| Page Hits           : " << (stats.totalReferences - stats.pageFaults) << "\n";
