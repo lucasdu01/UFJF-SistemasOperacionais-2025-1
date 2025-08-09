@@ -12,104 +12,62 @@
 
 </div>
 
-## 📖 Sobre o Projeto
-
 Implementação educacional de **dois algoritmos clássicos** de substituição de página em C++, com interface interativa para análise comparativa de desempenho.
 
-### 🎯 Algoritmos Implementados
+## 🎯 Algoritmos Implementados
 
-| Algoritmo | Estrutura | Complexidade | Característica |
-|-----------|-----------|--------------|----------------|
-| **🕐 Clock** | Buffer circular | O(1) amortizado | Ponteiro rotativo, páginas fixas |
-| **📋 Second Chance** | Lista linear | O(n) | Movimento físico, FIFO melhorado |
+| Algoritmo | Estrutura | Característica |
+|-----------|-----------|----------------|
+| **🕐 Clock** | Buffer circular | Ponteiro rotativo, O(1) amortizado |
+| **📋 Second Chance** | Lista linear | Movimento físico, O(n) |
 
-### ✨ Principais Recursos
+## 🚀 Como Usar
 
-- 🎮 **Interface interativa** com menu intuitivo
-- 📊 **Comparação em tempo real** entre algoritmos
-- 🧪 **Testes automáticos** predefinidos
-- 📈 **Estatísticas detalhadas** (page faults, hit rate)
-- 🔍 **Modo debug** para análise passo a passo
-
-## 📁 Estrutura do Projeto
-
-```
-📂 UFJF-SistemasOperacionais-2025-1/
-├── 🗂️ src/
-│   ├── 📂 include/          # Headers (.h)
-│   ├── 📂 lib/              # Implementações (.cpp)
-│   └── 📂 app/              # Aplicação principal
-├── 📋 docs/                 # Documentação completa
-├── 🧪 tests/               # Casos de teste
-├── 📝 examples/            # Exemplos de execução
-└── ⚙️ Makefile            # Automação de build
-```
-
-## 🚀 Início Rápido
-
-### � Pré-requisitos
+### **Compilação e Execução**
 ```bash
-# Requisitos mínimos
-- G++ com suporte C++11+
-- Make (mingw32-make no Windows)
-```
-
-### ⚡ Compilação e Execução
-```bash
-# 1. Clone o repositório
-git clone <repository-url>
-cd UFJF-SistemasOperacionais-2025-1
-
-# 2. Compile e execute
-make && make run
-
-# Windows (MinGW)
+# Windows
 mingw32-make && mingw32-make run
+
+# Linux 
+make && make run
 ```
 
-### 🎮 Como Usar
-
-1. **Configure** o número de frames de memória (recomendado: 3-10)
-2. **Selecione** o algoritmo (Clock ou Second Chance)
-3. **Execute** testes automáticos para comparação
-4. **Experimente** simulação interativa com suas sequências
+### **Início Rápido**
+1. Execute o programa
+2. Escolha **opção 4** (Testes automáticos) ⭐ 
+3. Veja comparação Clock vs Second Chance
+4. Experimente **opção 3** com: `1 2 3 4 1 2 5`
 
 ## � Exemplos de Teste
 
-### ⚡ Teste Rápido
 ```bash
-Sequência: 1 2 3 4 1 2 5 1 2 3 4 5
-Frames: 3
-Resultado: Comparação direta Clock vs Second Chance
+Básico:      1 2 3 4 1 2 5     # ~6-7 page faults
+Localidade:  1 1 1 2 2 2 3     # ~3 page faults (boa performance)
+Pior caso:   1 2 3 4 5 6 7     # Máximo page faults
 ```
 
-### 🎯 Análise de Performance
-```bash
-# Localidade Temporal
-Sequência: 1 1 1 2 2 2 3 3 3
-Hit Rate esperado: >66%
+## ✨ Recursos
 
-# Pior Caso
-Sequência: 1 2 3 4 5 6 7 8 9
-Hit Rate esperado: Baixo para ambos algoritmos
-```
+- 🎮 Interface interativa com menu intuitivo
+- 📊 Comparação em tempo real entre algoritmos
+- 🧪 Testes automáticos predefinidos
+- 📈 Estatísticas detalhadas (page faults, hit rate)
+- 🔍 Modo debug para análise passo a passo
 
-## � Documentação Completa
+## 📋 Documentação
 
 | Arquivo | Descrição |
 |---------|-----------|
+| [`docs/manual_uso.md`](docs/manual_uso.md) | 📖 Manual de uso completo |
 | [`docs/algoritmo_clock.md`](docs/algoritmo_clock.md) | 🕐 Algoritmo Clock detalhado |
 | [`docs/algoritmo_secondChance.md`](docs/algoritmo_secondChance.md) | 📋 Algoritmo Second Chance |
-| [`docs/manual_uso.md`](docs/manual_uso.md) | 📖 Manual completo de uso |
-| [`docs/casos_teste.md`](docs/casos_teste.md) | 🧪 Casos de teste |
+| [`docs/SecondChanceXClock.md`](docs/SecondChanceXClock.md) | ⚖️ Comparação entre algoritmos |
 
-## 🎯 Características Técnicas
+## 📚 Referências
 
-- ✅ **Arquitetura modular** - Fácil extensão e manutenção
-- ✅ **Interface intuitiva** - Menu interativo com validação
-- ✅ **Comparação precisa** - Clock vs Second Chance vs FIFO vs Ótimo  
-- ✅ **Análise detalhada** - Estatísticas completas e modo debug
-- ✅ **Cross-platform** - Windows, Linux, macOS
+Desenvolvido com base em literatura acadêmica consolidada:
+- **Tanenbaum, A. S.** *Modern Operating Systems* (4ª ed.)
+- **Silberschatz, A.** *Operating System Concepts* (10ª ed.)
 
 ---
 
